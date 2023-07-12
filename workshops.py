@@ -426,4 +426,3 @@ def batch_clusters(Xs, adj, n_clusters=10):
 
     return clusters
 
-#%%
