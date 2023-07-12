@@ -1,58 +1,36 @@
-# critical-stroke
+# cna2023-critical-brain
 
-Repository accompanying the article ["Do strokes affect the brain’s critical state? A
-theoretical perspective."](http://link_to_paper).
-Contents:
-- code with simulation of Ising and HTC dynamics defined on arbitrary networks, 
-- various network generators, and
-- code for performing cluster analysis
+Repository accompanying the workshops on [Brain's Criticality](https://cna2023.ift.uj.edu.pl/documents/152426817/153646757/GRELA_JANAREK_Abstract/224aa57e-aeee-438b-b836-591c6ac939ee)
+at [CNA2023](https://cna2023.ift.uj.edu.pl/start).
 
-## Requirements
+
+## Hands on brain's criticality
+In this workshop, we will delve into the fascinating phenomenon of brain criticality. 
+Our objective is to provide students with a comprehensive understanding of both theoretical 
+and numerical aspects concerning human brain activity and criticality.
+
+After a concise introductory lecture, we will engage in simulating cortical activity utilizing 
+the Haimovici et al. [1] model, which employs a healthy human brain [2]. This model, based on 
+a straightforward cellular automaton, accurately reproduces the activity of cortical regions 
+of interest (ROI) through a network of weighted connections, known as the connectome. It exhibits 
+a critical transition, where the dynamics of the model closely mirror empirical human brain 
+activity, including correlations and resting-state networks. The purpose of this workshop is to 
+familiarize students with brain activity modeling, criticality, and analysis of simulations.
+
+Throughout the workshop, we will conduct simulations of the model using real human connectome
+data and endeavor to identify the critical transition using various methodologies. 
+These will encompass activity analysis, examination of clusters of active ROIs, and more.
+Additionally, we will compare different measures of criticality and explore intriguing scenarios, 
+such as artificial connectomes or injured brains, (e.g. lobotomy just for fun!) 8-)
+
+References:
+1. A. Haimovici et al., *Phys. Rev. Lett.* **110**, 178101 (2013)
+2. P. Hagmann et al., *PLoS Biology* **6 (7)** (2008)
+
+### Requirements (for standalone usage):
+* python3
 * numpy
-* scipy
 * numba
+* matplotlib
 * networkx
 * scikit-image
-* jupyter (only for jupyter notebook tutorials)
-* matplotlib (only for jupyter notebook tutorials)
-
-Tested using:
-* numpy (1.21.0)
-* scipy (1.8.0)
-* numba (0.55.1)
-* scikit-image (0.19.3)
-* networkx (2.8)
-
-## Simulation:
-Before starting cluster analysis, create files containing simulation
-results (of the HTC model and Ising model). Two executable scripts are
-used for this purpose: `simulation_htc.py` and `simulation_ising.py`.
-The simulation scripts require configuration files. Examples used in
-tutorial-notebooks are located in `cfgs/` directory. Then, the script
-are run using following command:
-
-> ./simulation_htc.py Path/to/Config/File.ini
-
-or
-> ./simulation_ising.py Path/to/Config/File.ini
-
-For the structure of configuration files see `sim_htc_config.ini` and
-`sim_ising_config.ini` which contain detailed information.
-The simulation scripts saves all data in  `output.npz` file
-in a desired directory.
-
-## Preparation of adjacency (connection) matrices and connectomes
-The standard [Hagmann et al.'s connectome](https://doi.org/10.1371/journal.pbio.0060159.g001) is located in `hagmann_connectome.npz`
-file. It consists of a connection matrix and labels assigning regions-of-interest
-(ROIs) to appropriate resting-state-networks (RNSs).
-
-Examples for preparation of Ising grids (for Ising simulations) and modified
-connectomes (for HTC model simulations) can be foud in `gen_connectome.ipynb`.
-
-
-## Cluster analysis
-Examples of cluster analysis are prepared in `cluster_analysis.ipynb` notebook.
-Clustering routines for both models can be found in `clusters_htc.py` and
-`clusters_ising.py`. In the case of the HTC model clusters are found using graph
-approach (`networkx`), while in the Ising model, clusters are computed using image-analysis
-based methods (`skicit-image`).
