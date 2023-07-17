@@ -390,9 +390,14 @@ class IsingModel:
         return X
 
     @staticmethod
-    def calc_Tc(J) -> float:
+    def calc_Tc(J: float) -> float:
         return 2*J/np.log(np.sqrt(2)+1)
 
+    @staticmethod
+    def calc_mag(T: float,J: float) -> float:
+        onsager = (1 - 1/(np.sinh(2*J/T)**4))
+        if onsager < 0: onsager = 0.
+        return onsager**(1/8) 
 
 def cluster_sizes(adj, mask):
     adj0 = adj[mask][::, mask]
