@@ -201,7 +201,8 @@ def _run(
 
 class Grid:
     '''
-    class for grid-like networkx graph creation. Basic methods:
+    Set of methods for creation of grid-like networkx graphs. Basic methods:
+    
     grid_2d - to create a two-dimensional grid
     grid_2d_patch - to create a two-dimensional grid with a patch in the middle
     grid_2d_slice - to create a two-dimensional grid sliced in the middle
@@ -414,10 +415,16 @@ class IsingModel:
 
     @staticmethod
     def calc_Tc(J: float) -> float:
+        '''
+        calculate critical temperature
+        '''
         return 2*J/np.log(np.sqrt(2)+1)
 
     @staticmethod
     def calc_mag(T: float,J: float) -> float:
+        '''
+        find Onsager magnetization
+        '''
         onsager = (1 - 1/(np.sinh(2*J/T)**4))
         if onsager < 0: onsager = 0.
         return onsager**(1/8) 
