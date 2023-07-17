@@ -431,3 +431,12 @@ def batch_clusters(Xs, adj, n_clusters=10):
 
     return clusters
 
+def watts_strogatz_connectome(number_of_nodes, k, pi):
+    g = nx.watts_strogatz_graph(number_of_nodes, k, pi)
+    adjacency = nx.adjacency_matrix(g).todense().astype(float)
+    adj_tri_up = np.triu(adjacency)
+    number_of_weights = int(np.sum(adj_tri_up))
+    weights = np.random.exponential(scale=1 / 12.5, size=number_of_weights)
+    adj_tri_up[adj_tri_up > 0] = weights
+    adjacency = adj_tri_up + adj_tri_up.T
+    return adjacency
