@@ -200,7 +200,12 @@ def _run(
 
 
 class Grid:
-
+    '''
+    class for grid-like networkx graph creation. Basic methods:
+    grid_2d - to create a two-dimensional grid
+    grid_2d_patch - to create a two-dimensional grid with a patch in the middle
+    grid_2d_slice - to create a two-dimensional grid sliced in the middle
+    '''
     def __init__(self):
         pass
 
@@ -312,7 +317,25 @@ class Grid:
 
 
 class IsingModel:
-    
+    '''
+    Ising model simulating spins connected via connectome network. The spins are in two possible states +1 and -1.
+
+    Parameters:
+        n_steps: int
+            Number of time steps of the simulation.
+        T: float
+            Model temperature.
+        network: nx.Graph or np.ndarray
+            (weighted) Graph with which the spins interact.
+        J: float (default = 1.0)
+            Coupling parameter.
+        init_type: str (default = uniform)
+            Initial condition type. Possible values uniform, random_sym and random_asym.
+        n_transient: int
+            Drop the initial time steps to reach thermalization.
+        n_sweep: int (default = None)
+            How many sweeps per single time step. If None, the whole network is swept.
+    '''
     def __init__(self,
                  n_steps: int,
                  T: float,
