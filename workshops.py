@@ -423,22 +423,40 @@ class IsingModel:
     @staticmethod
     def calc_mag(T: float,J: float) -> float:
         '''
-        find Onsager magnetization
+        calculate Onsager magnetization
         '''
         onsager = (1 - 1/(np.sinh(2*J/T)**4))
         if onsager < 0: onsager = 0.
         return onsager**(1/8) 
 
-def cluster_sizes(adj, mask):
+def cluster_sizes(adj: np.ndarray, mask: np.ndarray) -> np.ndarray:
     adj0 = adj[mask][::, mask]
     G0 = nx.from_numpy_array(adj0)
     return np.array([len(c) for c in sorted(nx.connected_components(G0), key=len, reverse=True)])
 
 
-def find_clusters(X, adj, n_clusters=10):
+def find_clusters(X: np.ndarray, adj: np.ndarray, n_clusters: int = 10, cluster_val = 1) -> np.ndarray:
+    '''
+    find cluster sizes (single mode)
+    
+    Parameters:
+        X: np.ndarray
+            2D data array with shape (n_neurons, n_timesteps).
+        adj: np.ndarray
+            Adjacency matrix.
+        n_clusters: int (default = 10)
+            Specify the number of largest clusters to track.
+        cluster_val: int (default = 1)
+            Calculate clusters of cluster_val's. 
+            
+    Returns:
+        clusters: 2D np.ndarray
+            Cluster sizes with shape (n_timesteps, n_clusters)
+    '''
+    
     clusters = None
     for Xslice in X.T:
-        mask = Xslice == 1
+        mask = Xslice == cluster_val
         cl = cluster_sizes(adj, mask)
         offset = n_clusters-len(cl)
         if offset > 0:
@@ -451,7 +469,22 @@ def find_clusters(X, adj, n_clusters=10):
     return clusters
 
 
-def batch_clusters(Xs, adj, n_clusters=10):
+def batch_clusters(Xs: np.ndarray, adj: np.ndarray, n_clusters: int = 10) -> np.ndarray:
+    '''
+    find cluster sizes (batch mode)
+    
+    Parameters:
+        Xs: np.ndarray
+            3D data array with shape (n_thresholds, n_neurons, n_timesteps).
+        adj: np.ndarray
+            Adjacency matrix.
+        n_clusters: int (default = 10)
+            Specify the number of largest clusters to track.
+            
+    Returns:
+        clusters: 3D np.ndarray
+            Cluster sizes with shape (n_thresholds, n_timesteps, n_clusters)
+    '''
     clusters = None
     for X in tqdm(Xs):
         # cl = find_clusters(X, adj, n_clusters).mean(axis=0)
@@ -461,8 +494,23 @@ def batch_clusters(Xs, adj, n_clusters=10):
 
     return clusters
 
-def watts_strogatz_connectome(number_of_nodes, k, pi):
-    g = nx.watts_strogatz_graph(number_of_nodes, k, pi)
+def watts_strogatz_connectome(number_of_nodes: int, k: int, p: float) -> np.ndarray:
+    '''
+    generate a weighted Watts-Strogatz connectome
+    
+    Parameters:
+        number_of_nodes: int
+            Specify number of nodes in the connectome.
+        k: int
+            Number of nearest neighbors for each node.
+        p: float
+            Rewiring probability.
+    
+    Returns:
+        adjacency: 2D np.ndarray
+        
+    '''
+    g = nx.watts_strogatz_graph(number_of_nodes, k, p)
     adjacency = nx.adjacency_matrix(g).todense().astype(float)
     adj_tri_up = np.triu(adjacency)
     number_of_weights = int(np.sum(adj_tri_up))
