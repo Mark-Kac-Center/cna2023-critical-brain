@@ -7,6 +7,8 @@ import random
 from itertools import product
 import pickle
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 
 
 class SERModel:
@@ -518,3 +520,59 @@ def watts_strogatz_connectome(number_of_nodes: int, k: int, p: float) -> np.ndar
     adj_tri_up[adj_tri_up > 0] = weights
     adjacency = adj_tri_up + adj_tri_up.T
     return adjacency
+
+def plot_color_clusters(snapshot: np.ndarray, network: nx.Graph) -> None:
+    """
+    Starting from a 2D snapshot of Ising model (entries -1 and 1) finds the nodes that are in the largest (S1)
+    and second largest (S2) clusters.
+
+    Plots the initial state ("check") and the state with S1 in red and S2 in blue.
+
+    """
+
+    Lx, Ly = snapshot.shape
+    state = snapshot.flatten()
+    state_check = np.copy(state)
+
+    ising_adj = nx.adjacency_matrix(network).todense()
+
+    mask_up = 1.0 * (state == 1)
+    mask_down = 1.0 * (state == -1)
+    mask_mat_up = np.outer(mask_up.T, mask_up)
+    mask_mat_down = np.outer(mask_down.T, mask_down)
+
+    ising_adj_up = np.multiply(ising_adj, mask_mat_up)
+    ising_adj_down = np.multiply(ising_adj, mask_mat_down)
+
+    if np.all(ising_adj_up == 0.0): # i.e. graph not connected
+        clusters_up = list(np.argwhere(mask_up == 1.0)) # finds the first one spin up
+    else:
+        g_up = nx.from_numpy_array(ising_adj_up) # connected graph
+        clusters_up = list(nx.connected_components(g_up))
+
+    if np.all(ising_adj_down == 0.0):
+        clusters_down = list(np.argwhere(mask_down == 1.0))
+    else:
+        g_down = nx.from_numpy_array(ising_adj_down)
+        clusters_down = list(nx.connected_components(g_down))
+
+    all_clusters = clusters_up + clusters_down
+
+    if len(all_clusters) < 2:
+        print("Only 1 cluster in the system.")
+        fig, ax = plt.subplots(1, 1)
+        ax.imshow(state_check.reshape(Lx, Ly), cmap='gray')
+
+    else:
+        all_clusters = sorted(all_clusters, key=len, reverse=True)
+        S1 = list(all_clusters[0])
+        S2 = list(all_clusters[1])
+
+        state[S1] = 3
+        state[S2] = 2
+
+        cmap = ListedColormap(["black", "None", "white", "blue", "red"], 5)
+
+        fig, (ax0, ax1) = plt.subplots(1, 2, figsize=(10,3))
+        ax0.imshow(state_check.reshape(Lx, Ly), cmap='gray')
+        ax1.imshow(state.reshape(Lx, Ly), cmap=cmap, vmin=-1, vmax=3)
