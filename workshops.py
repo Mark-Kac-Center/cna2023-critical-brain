@@ -6,7 +6,7 @@ import networkx as nx
 import random
 from itertools import product
 import pickle
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
